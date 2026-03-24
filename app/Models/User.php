@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Enums\RoleType;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -40,5 +42,15 @@ class User extends Authenticatable implements HasAvatar
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->avatar_url ? Storage::url($this->avatar_url) : null;
+    }
+
+    function isSuperAdmin(): bool
+    {
+        return $this->hasRole(RoleType::SUPER_ADMIN->value);
+    }
+
+    function isAdmin(): bool
+    {
+        return $this->hasRole(RoleType::ADMIN->value);
     }
 }

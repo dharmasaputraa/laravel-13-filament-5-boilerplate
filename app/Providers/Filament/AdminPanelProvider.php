@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -31,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->viteTheme('resources/css/filament/admin/theme.css')
+            ->font('Geist')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -77,8 +79,13 @@ class AdminPanelProvider extends PanelProvider
                         scopeToPanel: true, // scope the 2FA only to the current panel (default = true)
                     )
                     ->enableBrowserSessions(condition: true),
-            ])
-            ->viteTheme('resources/css/filament/admin/theme.css')
-            ->font('Geist');
+                FilamentDeveloperLoginsPlugin::make()
+                    ->enabled(app()->environment('local'))
+                    ->users([
+                        'Super Admin' => 'superadmin@example.com',
+                        'Admin' => 'admin@example.com',
+                        'User' => 'user@example.com',
+                    ])
+            ]);
     }
 }
