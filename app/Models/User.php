@@ -18,13 +18,19 @@ use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 #[Fillable(['name', 'email', 'password', 'avatar_url'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
-class User extends Authenticatable implements HasAvatar, FilamentUser
+class User extends Authenticatable implements HasAvatar, FilamentUser, HasMedia
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles, BreezyTwoFactorAuthenticatable;
+    use HasFactory,
+        Notifiable,
+        TwoFactorAuthenticatable,
+        HasRoles,
+        BreezyTwoFactorAuthenticatable,
+        InteractsWithMedia;
 
     /**
      * Get the attributes that should be cast.
@@ -43,10 +49,10 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return match ($panel->getId()) {
-            'admin' => $this->hasAnyRoleEnum(
-                RoleType::SUPER_ADMIN,
-                RoleType::ADMIN
-            ),
+            'admin' => $this->hasAnyRole([
+                RoleType::SUPER_ADMIN->value,
+                RoleType::ADMIN->value,
+            ]),
 
             default => false,
         };
@@ -54,7 +60,12 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar_url ? Storage::url($this->avatar_url) : null;
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('s3');
+
+        return $this->avatar_url
+            ? $disk->url($this->avatar_url)
+            : null;
     }
 
     function isSuperAdmin(): bool
@@ -65,5 +76,12 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
     function isAdmin(): bool
     {
         return $this->hasRole(RoleType::ADMIN->value);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatar')
+            ->singleFile()
+            ->useDisk('s3');
     }
 }

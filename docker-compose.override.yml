@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-    container_name: laravel_horizon
+    container_name: laravel_sk_horizon
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
@@ -27,7 +27,7 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-    container_name: laravel_pail
+    container_name: laravel_sk_pail
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html

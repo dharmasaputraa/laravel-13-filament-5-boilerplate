@@ -4,6 +4,8 @@ namespace App\Providers\Filament;
 
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -71,6 +73,20 @@ class AdminPanelProvider extends PanelProvider
                         navigationGroup: 'Settings', // Sets the navigation group for the My Profile page (default = null)
                         hasAvatars: true, // Enables the avatar upload form component (default = false)
                         slug: 'profile' // Sets the slug for the profile page (default = 'my-profile')
+                    )
+                    ->avatarUploadComponent(
+                        fn() => FileUpload::make('avatar_url')
+                            ->label('Avatar')
+                            ->disk('s3')
+                            ->directory('avatars')
+                            ->avatar()
+                            ->image()
+                            ->imageEditor()
+                            ->maxSize(1024)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->automaticallyCropImagesToAspectRatio('1:1')
+                            ->automaticallyResizeImagesToWidth(300)
+                            ->automaticallyResizeImagesToHeight(300)
                     )
                     ->enableTwoFactorAuthentication(
                         force: false, // force the user to enable 2FA before they can use the application (default = false)

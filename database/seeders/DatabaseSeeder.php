@@ -13,15 +13,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        //  php artisan shield:seeder --generate --option=permissions_via_roles
 
         $this->call([
-            ShieldSeeder::class
+            ShieldSeeder::class,
+            RoleSeeder::class,
         ]);
     }
 }
