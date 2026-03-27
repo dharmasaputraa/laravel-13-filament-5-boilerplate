@@ -54,5 +54,7 @@ class RoleSeeder extends Seeder
                 'password' => Hash::make('password'),
             ]
         );
+
+        $user->assignRole(RoleType::MEMBER->value);
     }
 }

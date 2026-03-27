@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "989bacd8d4422bad55c3580045de0a4a",
+    "content-hash": "0c1d79810fcd0d788206763b3114cddb",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7327,6 +7327,52 @@
             "time": "2026-03-23T22:56:56+00:00"
         },
         {
+            "name": "stechstudio/filament-impersonate",
+            "version": "v5.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stechstudio/filament-impersonate.git",
+                "reference": "c5d5b8b5150fad02db18c4479eafb9dc2f537ffc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stechstudio/filament-impersonate/zipball/c5d5b8b5150fad02db18c4479eafb9dc2f537ffc",
+                "reference": "c5d5b8b5150fad02db18c4479eafb9dc2f537ffc",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^4.0|^5.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^3.0",
+                "pestphp/pest-plugin-laravel": "^3.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "STS\\FilamentImpersonate\\FilamentImpersonateServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "STS\\FilamentImpersonate\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A Filament package to impersonate your users.",
+            "support": {
+                "issues": "https://github.com/stechstudio/filament-impersonate/issues",
+                "source": "https://github.com/stechstudio/filament-impersonate/tree/v5.1.0"
+            },
+            "time": "2026-02-22T15:57:37+00:00"
+        },
+        {
             "name": "symfony/clock",
             "version": "v7.4.0",
             "source": {
@@ -10788,6 +10834,79 @@
                 "source": "https://github.com/webmozarts/assert/tree/2.1.6"
             },
             "time": "2026-02-27T10:28:38+00:00"
+        },
+        {
+            "name": "zvizvi/user-fields",
+            "version": "0.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zvizvi/filament-user-fields.git",
+                "reference": "2990216b01a49b0f9defb5d3180ff8f620f49c30"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zvizvi/filament-user-fields/zipball/2990216b01a49b0f9defb5d3180ff8f620f49c30",
+                "reference": "2990216b01a49b0f9defb5d3180ff8f620f49c30",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^4.0|^5.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.15.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^8.0",
+                "orchestra/testbench": "^10.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "UserFields": "Zvizvi\\UserFields\\Facades\\UserFields"
+                    },
+                    "providers": [
+                        "Zvizvi\\UserFields\\UserFieldsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Zvizvi\\UserFields\\": "src/",
+                    "Zvizvi\\UserFields\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "zvizvi",
+                    "email": "zvizvi5@outlook.com",
+                    "role": "Author"
+                }
+            ],
+            "description": "This is my package user-fields",
+            "homepage": "https://github.com/zvizvi/filament-user-fields",
+            "keywords": [
+                "laravel",
+                "user-fields",
+                "zvizvi"
+            ],
+            "support": {
+                "issues": "https://github.com/zvizvi/filament-user-fields/issues",
+                "source": "https://github.com/zvizvi/filament-user-fields"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/zvizvi",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-01-28T00:40:45+00:00"
         }
     ],
     "packages-dev": [
@@ -13350,5 +13469,5 @@
         "php": "^8.3"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

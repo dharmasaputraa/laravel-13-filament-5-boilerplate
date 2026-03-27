@@ -14,6 +14,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -39,7 +40,10 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
+            // ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
+            ->resources([
+                \App\Filament\Resources\Users\UserResource::class,
+            ])
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
@@ -64,11 +68,13 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
-                FilamentShieldPlugin::make(),
+                FilamentShieldPlugin::make()
+                    ->navigationGroup('User Management')
+                    ->navigationLabel('Roles & Permissions'),
                 BreezyCore::make()
                     ->myProfile(
                         shouldRegisterUserMenu: true, // Sets the 'account' link in the panel User Menu (default = true)
-                        userMenuLabel: 'Profile', // Customizes the 'account' link label in the panel User Menu (default = null)
+                        userMenuLabel: 'My Profile', // Customizes the 'account' link label in the panel User Menu (default = null)
                         shouldRegisterNavigation: false, // Adds a main navigation item for the My Profile page (default = false)
                         navigationGroup: 'Settings', // Sets the navigation group for the My Profile page (default = null)
                         hasAvatars: true, // Enables the avatar upload form component (default = false)
@@ -82,7 +88,7 @@ class AdminPanelProvider extends PanelProvider
                             ->avatar()
                             ->image()
                             ->imageEditor()
-                            ->maxSize(1024)
+                            ->maxSize(2048)
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                             ->automaticallyCropImagesToAspectRatio('1:1')
                             ->automaticallyResizeImagesToWidth(300)

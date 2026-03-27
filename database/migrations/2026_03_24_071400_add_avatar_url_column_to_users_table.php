@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('avatar_url')->nullable();
+            $table->string('avatar_url')->nullable()->after('password');
+            $table->boolean('is_active')->default(true)->after('remember_token');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('avatar_url');
+            $table->dropColumn('is_active');
         });
     }
 };
