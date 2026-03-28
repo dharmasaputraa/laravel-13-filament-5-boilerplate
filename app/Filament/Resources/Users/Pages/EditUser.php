@@ -24,9 +24,19 @@ class EditUser extends EditRecord
     {
         return [
             ViewAction::make(),
-            // RestoreAction::make()
-            //     ->icon(Heroicon::ArrowUturnLeft),
             DeleteAction::make(),
         ];
+    }
+
+    protected function afterSave(): void
+    {
+        $this->record->assignSingleRole($this->data['role']);
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['role'] = $this->record->roles->first()?->name;
+
+        return $data;
     }
 }

@@ -40,6 +40,8 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            // ->sidebarCollapsibleOnDesktop()
+            // ->topbar(false)
             // ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->resources([
                 \App\Filament\Resources\Users\UserResource::class,

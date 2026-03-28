@@ -40,7 +40,7 @@ class UserInfolist
                                         ->defaultImageUrl(fn(User $record) => 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($record->email))) . '?s=200&d=mp'),
                                     Flex::make([
 
-                                        Grid::make(2)
+                                        Grid::make(1)
                                             ->schema([
                                                 Group::make([
                                                     TextEntry::make('name'),
@@ -48,26 +48,26 @@ class UserInfolist
                                                         ->icon('heroicon-m-envelope')
                                                         ->copyable()
                                                         ->color('gray'),
-                                                    TextEntry::make('roles.name')
-                                                        ->label('Roles')
-                                                        ->badge()
-                                                        ->color('primary')
-                                                        ->formatStateUsing(
-                                                            fn(string $state): string =>
-                                                            RoleType::tryFrom($state)?->getLabel() ?? $state
-                                                        ),
+                                                    // TextEntry::make('roles.name')
+                                                    //     ->label('Roles')
+                                                    //     ->badge()
+                                                    //     ->color('primary')
+                                                    //     ->formatStateUsing(
+                                                    //         fn(string $state): string =>
+                                                    //         RoleType::tryFrom($state)?->getLabel() ?? $state
+                                                    //     ),
                                                 ]),
-                                                Group::make([
-                                                    IconEntry::make('is_active')
-                                                        ->label('Account Status')
-                                                        ->boolean(),
-                                                    TextEntry::make('email_verified_at')
-                                                        ->label('Verified')
-                                                        ->getStateUsing(fn($record) => $record->email_verified_at ? 'Verified' : 'Not Verified')
-                                                        ->badge()
-                                                        ->color(fn($state) => $state === 'Verified' ? 'success' : 'gray')
-                                                        ->tooltip(fn($record) => $record->email_verified_at?->format('d M Y H:i'))
-                                                ]),
+                                                // Group::make([
+                                                //     IconEntry::make('is_active')
+                                                //         ->label('Account Status')
+                                                //         ->boolean(),
+                                                //     TextEntry::make('email_verified_at')
+                                                //         ->label('Verified')
+                                                //         ->getStateUsing(fn($record) => $record->email_verified_at ? 'Verified' : 'Not Verified')
+                                                //         ->badge()
+                                                //         ->color(fn($state) => $state === 'Verified' ? 'success' : 'gray')
+                                                //         ->tooltip(fn($record) => $record->email_verified_at?->format('d M Y H:i'))
+                                                // ]),
                                             ]),
 
 
@@ -81,8 +81,29 @@ class UserInfolist
 
                         // Kanan: Sidebar
                         Group::make([
+                            Section::make('Access & Status')
+                                ->schema([
+                                    TextEntry::make('roles.name')
+                                        ->label('Roles')
+                                        ->badge()
+                                        ->color('primary')
+                                        ->formatStateUsing(
+                                            fn(string $state): string =>
+                                            RoleType::tryFrom($state)?->getLabel() ?? $state
+                                        ),
+                                    IconEntry::make('is_active')
+                                        ->label('Account Status')
+                                        ->boolean(),
+
+                                ]),
                             Section::make('Security')
                                 ->schema([
+                                    TextEntry::make('email_verified_at')
+                                        ->label('Verified')
+                                        ->getStateUsing(fn($record) => $record->email_verified_at ? 'Verified' : 'Not Verified')
+                                        ->badge()
+                                        ->color(fn($state) => $state === 'Verified' ? 'success' : 'gray')
+                                        ->tooltip(fn($record) => $record->email_verified_at?->format('d M Y H:i')),
                                     TextEntry::make('two_factor_confirmed_at')
                                         ->label('2FA')
                                         ->getStateUsing(fn(User $record) => $record->hasConfirmedTwoFactor() ? 'Enabled' : 'Disabled')

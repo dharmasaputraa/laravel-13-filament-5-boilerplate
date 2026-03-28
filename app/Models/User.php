@@ -148,6 +148,16 @@ class User extends Authenticatable implements HasAvatar, FilamentUser, HasMedia
         return $this->hasRole(RoleType::MEMBER->value);
     }
 
+    public function assignSingleRole(string $role): void
+    {
+        $this->syncRoles([$role]);
+    }
+
+    public function getRoleNameAttribute(): ?string
+    {
+        return $this->roles->first()?->name;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | IMPERSONATION

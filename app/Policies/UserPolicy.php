@@ -10,20 +10,42 @@ class UserPolicy
 {
     use HandlesAuthorization;
 
-    public function viewAny(User $user): bool
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    protected function isNotSelf(AuthUser $authUser, User $model): bool
     {
-        if ($user->can('view_any_user')) {
+        return $authUser->id !== $model->id;
+    }
+
+    protected function isImpersonating(): bool
+    {
+        return session()->has('impersonator_id'); // FIXED
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Core Permissions
+    |--------------------------------------------------------------------------
+    */
+
+    public function viewAny(AuthUser $authUser): bool
+    {
+        if ($authUser->can('view_any_user')) {
             return true;
         }
 
-        if (session()->has('impersonate')) {
+        if ($this->isImpersonating()) {
             return true;
         }
 
         return false;
     }
 
-    public function view(AuthUser $authUser): bool
+    public function view(AuthUser $authUser, User $model): bool
     {
         return $authUser->can('view_user');
     }
@@ -35,12 +57,14 @@ class UserPolicy
 
     public function update(AuthUser $authUser, User $model): bool
     {
-        return $authUser->can('update_user') && $authUser->id !== $model->id;
+        return $authUser->can('update_user')
+            && $this->isNotSelf($authUser, $model);
     }
 
     public function delete(AuthUser $authUser, User $model): bool
     {
-        return $authUser->can('delete_user') && $authUser->id !== $model->id;
+        return $authUser->can('delete_user')
+            && $this->isNotSelf($authUser, $model);
     }
 
     public function deleteAny(AuthUser $authUser): bool
@@ -48,12 +72,17 @@ class UserPolicy
         return $authUser->can('delete_any_user');
     }
 
-    public function restore(AuthUser $authUser): bool
+    public function restore(AuthUser $authUser, User $model): bool
     {
         return $authUser->can('restore_user');
     }
 
-    public function forceDelete(AuthUser $authUser): bool
+    public function restoreAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('restore_any_user');
+    }
+
+    public function forceDelete(AuthUser $authUser, User $model): bool
     {
         return $authUser->can('force_delete_user');
     }
@@ -63,12 +92,7 @@ class UserPolicy
         return $authUser->can('force_delete_any_user');
     }
 
-    public function restoreAny(AuthUser $authUser): bool
-    {
-        return $authUser->can('restore_any_user');
-    }
-
-    public function replicate(AuthUser $authUser): bool
+    public function replicate(AuthUser $authUser, User $model): bool
     {
         return $authUser->can('replicate_user');
     }
@@ -76,5 +100,29 @@ class UserPolicy
     public function reorder(AuthUser $authUser): bool
     {
         return $authUser->can('reorder_user');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Actions (Filament Actions)
+    |--------------------------------------------------------------------------
+    */
+
+    public function changeRole(AuthUser $authUser, User $model): bool
+    {
+        return $authUser->can('change_role_user')
+            && $this->isNotSelf($authUser, $model);
+    }
+
+    public function toggleActive(AuthUser $authUser, User $model): bool
+    {
+        return $authUser->can('toggle_active_user')
+            && $this->isNotSelf($authUser, $model);
+    }
+
+    public function disable2FA(AuthUser $authUser, User $model): bool
+    {
+        return $this->isNotSelf($authUser, $model)
+            && $model->hasConfirmedTwoFactor();
     }
 }
