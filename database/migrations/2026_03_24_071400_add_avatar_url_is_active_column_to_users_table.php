@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('avatar_url')->nullable()->after('password');
-            $table->boolean('is_active')->default(true)->after('remember_token');
+            $table->boolean('is_active')->default(true);
         });
     }
 

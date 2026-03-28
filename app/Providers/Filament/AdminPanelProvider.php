@@ -36,7 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->font('Geist')
-            ->login()
+            ->login(\App\Filament\Pages\Auth\Login::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -68,6 +68,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->middleware([
+                \App\Http\Middleware\Filament\EnsureUserIsActive::class,
             ])
             ->plugins([
                 FilamentShieldPlugin::make()

@@ -32,6 +32,15 @@ class UserPolicy
     |--------------------------------------------------------------------------
     */
 
+    public function before($authUser, $ability)
+    {
+        if (! $authUser->is_active) {
+            return false;
+        }
+
+        return null;
+    }
+
     public function viewAny(AuthUser $authUser): bool
     {
         if ($authUser->can('view_any_user')) {
