@@ -3,8 +3,12 @@
 namespace App\Filament\Resources\Users\Tables;
 
 use App\Enums\RoleType;
+use App\Filament\Actions\User\ChangeRoleAction;
+use App\Filament\Actions\User\Disable2FAAction;
+use App\Filament\Actions\User\ImpersonateUserAction;
+use App\Filament\Actions\User\ToggleActiveAction;
 use App\Models\User;
-use Filament\Actions\Action;
+use App\Services\User\UserService;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -15,9 +19,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Notifications\Collection;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Icons\Heroicon;
@@ -30,7 +32,6 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use STS\FilamentImpersonate\Actions\Impersonate;
 
 class UsersTable
 {
@@ -115,75 +116,23 @@ class UsersTable
                     )
                     ->native(false),
 
-                // TernaryFilter::make('is_active'),
                 TrashedFilter::make()
                     ->native(false),
             ])
             ->recordActions([
-                Impersonate::make()
-                    ->label("")
-                    ->color('gray')
-                    ->tooltip('Impersonate')
-                    ->visible(
-                        fn(User $record): bool =>
-                        Auth::user()->canImpersonate() &&
-                            $record->canBeImpersonated() && Auth::id() !== $record->id
-                    )
-                    ->redirectTo(function (User $record): string {
-                        if ($record->isAdmin() || $record->isSuperAdmin()) {
-                            return route('filament.admin.pages.dashboard');
-                        }
+                ImpersonateUserAction::make(),
 
-                        return route('home');
-                    }),
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make()
                         ->color("gray"),
 
                     ActionGroup::make([
-                        Action::make('toggle_active')
-                            ->icon(fn(User $record): Heroicon => $record->is_active ? Heroicon::XMark : Heroicon::Check)
-                            ->label(fn(User $record): string => $record->is_active ? 'Deactivate' : 'Activate')
-                            // ->color(fn(User $record): string => $record->is_active ? 'danger' : 'success')
-                            ->color("gray")
-                            ->visible(fn(User $record): bool => Auth::id() !== $record->id && Auth::user()->can('toggle_active_user'))
-                            ->requiresConfirmation()
-                            ->action(function (User $record) {
-                                $record->update(['is_active' => ! $record->is_active]);
 
-                                Notification::make()
-                                    ->title($record->is_active ? 'User activated' : 'User deactivated')
-                                    ->success()
-                                    ->send();
-                            }),
-                        Action::make('change_role')
-                            ->label('Change Role')
-                            ->icon('heroicon-o-shield-check')
-                            // ->color('info')
-                            ->color("gray")
-                            ->visible(
-                                fn(User $record): bool =>
-                                Auth::user()->can('change_role_user') && Auth::id() !== $record->id
-                            )
-                            ->fillForm(fn(User $record): array => [
-                                'role' => $record->roles->first()?->name,
-                            ])
-                            ->schema([
-                                Select::make('role')
-                                    ->label('Select Role')
-                                    ->options(RoleType::class)
-                                    ->required()
-                                    ->native(false),
-                            ])
-                            ->action(function (User $record, array $data): void {
-                                $record->syncRoles([$data['role']]);
+                        ToggleActiveAction::make(),
+                        ChangeRoleAction::make(),
+                        Disable2FAAction::make(),
 
-                                Notification::make()
-                                    ->title('Role updated successfully')
-                                    ->success()
-                                    ->send();
-                            }),
                     ])->dropdown(false),
 
                     ActionGroup::make([
@@ -219,10 +168,12 @@ class UsersTable
                             fn(): bool =>
                             Auth::user()->can('toggle_active_user')
                         )
-                        ->action(function (\Illuminate\Support\Collection $records, array $data): void {
+                        ->action(function (\Illuminate\Support\Collection $records, array $data, UserService $userService): void {
+                            $isActive = (bool) $data['is_active'];
+
                             $records
                                 ->filter(fn(User $record) => $record->id !== Auth::id())
-                                ->each(fn(User $record) => $record->update(['is_active' => (bool) $data['is_active']]));
+                                ->each(fn(User $record) => $userService->updateUser($record, ['is_active' => $isActive]));
 
                             Notification::make()
                                 ->title('Selected users updated')

@@ -148,6 +148,8 @@ class UserForm
                                     ->maxSize(2048)
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                     ->automaticallyCropImagesToAspectRatio('1:1')
+                                    ->automaticallyResizeImagesToWidth(800)
+                                    ->automaticallyResizeImagesToHeight(800)
                             ]),
 
                     ])

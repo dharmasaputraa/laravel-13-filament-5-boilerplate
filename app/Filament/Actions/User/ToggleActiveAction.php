@@ -2,6 +2,8 @@
 
 namespace App\Filament\Actions\User;
 
+use App\Models\User;
+use App\Services\User\UserService;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
@@ -9,24 +11,22 @@ use Illuminate\Support\Facades\Auth;
 
 class ToggleActiveAction
 {
-    public static function make($livewire): Action
+    public static function make(): Action
     {
         return Action::make('toggle_active')
-            ->label(fn() => $livewire->record->is_active ? 'Deactivate' : 'Activate')
-            ->icon(fn() => $livewire->record->is_active ? Heroicon::XMark : Heroicon::Check)
+            ->label(fn(User $record): string => $record->is_active ? 'Deactivate' : 'Activate')
+            ->icon(fn(User $record): Heroicon => $record->is_active ? Heroicon::XMark : Heroicon::Check)
             ->color('gray')
             ->requiresConfirmation()
-            ->modalHeading(fn() => ($livewire->record->is_active ? 'Deactivate' : 'Activate') . ' User?')
-            ->modalDescription('Are you sure you want to change this user\'s access status?')
-            ->visible(fn($livewire) => Auth::user()->can('toggleActive', $livewire->record))
-            ->authorize(fn($livewire) => Auth::user()->can('toggleActive', $livewire->record))
-            ->action(function () use ($livewire) {
-                $livewire->record->update([
-                    'is_active' => ! $livewire->record->is_active,
-                ]);
+            ->modalHeading(fn(User $record): string => ($record->is_active ? 'Deactivate' : 'Activate') . ' User?')
+            ->modalDescription("Are you sure you want to change this user's access status?")
+            ->visible(fn(User $record): bool => Auth::id() !== $record->id && Auth::user()->can('toggle_active_user'))
+            ->authorize(fn(User $record): bool => Auth::id() !== $record->id && Auth::user()->can('toggle_active_user'))
+            ->action(function (User $record, UserService $userService) {
+                $updatedUser = $userService->toggleActive($record);
 
                 Notification::make()
-                    ->title($livewire->record->is_active ? 'User activated' : 'User deactivated')
+                    ->title($updatedUser->is_active ? 'User activated' : 'User deactivated')
                     ->success()
                     ->send();
             });

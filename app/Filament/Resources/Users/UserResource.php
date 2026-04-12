@@ -18,6 +18,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use STS\FilamentImpersonate\Facades\Impersonation;
 use UnitEnum;
 
 class UserResource extends Resource
@@ -33,6 +34,15 @@ class UserResource extends Resource
     public static function getRecordTitleAttribute(): string
     {
         return 'name';
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        if (Impersonation::isImpersonating()) {
+            return false;
+        }
+
+        return true;
     }
 
     public static function form(Schema $schema): Schema

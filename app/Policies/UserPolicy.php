@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\User;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use STS\FilamentImpersonate\Facades\Impersonation;
 
 class UserPolicy
 {
@@ -43,11 +44,11 @@ class UserPolicy
 
     public function viewAny(AuthUser $authUser): bool
     {
-        if ($authUser->can('view_any_user')) {
+        if (Impersonation::isImpersonating()) {
             return true;
         }
 
-        if ($this->isImpersonating()) {
+        if ($authUser->can('view_any_user')) {
             return true;
         }
 

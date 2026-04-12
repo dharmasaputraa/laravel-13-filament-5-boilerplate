@@ -3,34 +3,38 @@
 namespace App\Filament\Actions\User;
 
 use App\Enums\RoleType;
+use App\Models\User;
+use App\Services\User\UserService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
 
 class ChangeRoleAction
 {
-    public static function make($livewire): Action
+    public static function make(): Action
     {
         return Action::make('change_role')
             ->label('Change Role')
-            ->icon(Heroicon::ShieldCheck)
+            ->icon('heroicon-o-shield-check')
             ->color('gray')
-            ->visible(fn($livewire) => Auth::user()->can('changeRole', $livewire->record))
-            ->authorize(fn($livewire) => Auth::user()->can('changeRole', $livewire->record))
+            ->visible(fn(User $record): bool => Auth::user()->can('change_role_user') && Auth::id() !== $record->id)
+            ->authorize(fn(User $record): bool => Auth::user()->can('change_role_user') && Auth::id() !== $record->id)
+            ->fillForm(fn(User $record): array => [
+                'role' => $record->roles->first()?->name,
+            ])
             ->schema([
                 Select::make('role')
+                    ->label('Select Role')
                     ->options(RoleType::class)
-                    ->default(fn() => $livewire->record->roles->first()?->name)
                     ->required()
                     ->native(false),
             ])
-            ->action(function (array $data) use ($livewire) {
-                $livewire->record->assignSingleRole($data['role']->value);
+            ->action(function (User $record, array $data, UserService $userService): void {
+                $userService->changeRole($record, $data['role']);
 
                 Notification::make()
-                    ->title('Role updated')
+                    ->title('Role updated successfully')
                     ->success()
                     ->send();
             });

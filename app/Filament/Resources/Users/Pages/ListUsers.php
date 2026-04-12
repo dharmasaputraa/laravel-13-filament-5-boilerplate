@@ -26,8 +26,6 @@ class ListUsers extends ListRecords
         return UserResource::getWidgets();
     }
 
-
-
     public function getTabs(): array
     {
         return [

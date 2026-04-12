@@ -96,8 +96,8 @@ class AdminPanelProvider extends PanelProvider
                             ->maxSize(2048)
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                             ->automaticallyCropImagesToAspectRatio('1:1')
-                            ->automaticallyResizeImagesToWidth(300)
-                            ->automaticallyResizeImagesToHeight(300)
+                            ->automaticallyResizeImagesToWidth(800)
+                            ->automaticallyResizeImagesToHeight(800)
                     )
                     ->enableTwoFactorAuthentication(
                         force: false, // force the user to enable 2FA before they can use the application (default = false)
