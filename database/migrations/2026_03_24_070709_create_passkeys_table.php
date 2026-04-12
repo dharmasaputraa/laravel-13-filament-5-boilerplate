@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('passkeys', function (Blueprint $table) {
             $table->id();
-            $table->morphs('authenticatable');
+            $table->uuidMorphs('authenticatable');
             $table->string('panel_id')->nullable();
             $table->text('name');
             $table->text('credential_id');

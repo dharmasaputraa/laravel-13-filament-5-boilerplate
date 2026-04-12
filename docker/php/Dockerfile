@@ -15,11 +15,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN usermod -u 1000 www-data
 
-# Fix composer cache
 RUN mkdir -p /var/www/.composer/cache \
     && chown -R www-data:www-data /var/www/.composer
 
-# Fix git safe directory - tulis langsung ke .gitconfig milik www-data
 RUN mkdir -p /var/www \
     && printf '[safe]\n\tdirectory = /var/www/html\n' > /var/www/.gitconfig \
     && chown www-data:www-data /var/www/.gitconfig
